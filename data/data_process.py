@@ -1,3 +1,7 @@
+from sklearn.preprocessing import Normalizer
+import pandas as pd
+import numpy as np
+
 # main data processing function.
 def data_process_(df,assignments,p,f):
   """
