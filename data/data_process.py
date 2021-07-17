@@ -1,5 +1,5 @@
 # main data processing function.
-def data_process(df,assignments,p,f):
+def data_process_(df,assignments,p,f):
   """
   A function that produces a list of pytorch dataloaders, one for each cluster.
   params:
@@ -25,7 +25,7 @@ def data_process(df,assignments,p,f):
     """
     feat (int): this is used to tell the model how many features to include e.g. 3 will use the final
                 three features in the original feature space so visits, number of appts, production.
-    """"
+    """
     assert len(inp) >= 4, "this subset doesn't have enough to create a sequence"
 
     first_ = np.expand_dims(inp[:p,feat:],axis=0)
