@@ -2,33 +2,48 @@ import torch
 
 
 def loop(model,train_loader,dev_loader,epochs,optimizer,criterion):
-	for epoch in range(epochs):
-		epoch_loss = 0
-		epoch_loss_dev = 0
-	
-		for idx,data_ in enumerate(train_loader):
-			optimizer.zero_grad()
+  """
+  A general training and inference loop function.
+  params:
+    - model (nn.Module): the model instantiation being used trained.
+    - train_loader (DataLoader): the training set dataloader.
+    - dev_loader (DataLoader): the dev set dataloader.
+    - epochs (int): number of epochs.
+    - optimizer: optimizer being used to update model parameters.
+    - criterion: loss function being used to train the model. 
+  returns:
+    - prints the training and dev set values of mape, reward, dual objective for each epoch.
+  """
 
-			# Load data.
-			inp,label = data_
+	def iteration(set_,model,loader,criterion,epoch,train=True):
+		epoch_mape = 0.0
+		epoch_rew = 0.0
+		epoch_dual = 0.0
 
-			# Compute output.
-			out = model(inp.float()).squeeze(-1)
-
-			loss = criterion(label.float(),out.float())
-			epoch_loss += loss.item()
-			loss.backward()
-			optimizer.step()
-
-		for idx, data_ in enumerate(dev_loader):
-			with torch.no_grad():
-				inp,label = data_
+		for idx, data in enumerate(loader):
+			if train:
+				optimizer.zero_grad()
+				inp,label = data
 				out = model(inp.float()).squeeze(-1)
+				loss, mape, rew = criterion(label.float(),out.float(),return_metrics=True)
+				loss.backward()
+				optimizer.step()
 
-				loss = criterion(label.float(),out.float())
-				epoch_loss_dev += loss.item()
+			else:
+				with torch.no_grad():
+					inp,label = data
+					out = model(inp.float()).squeeze(-1)
+					loss, mape, rew = criterion(label.float(),out.float(),return_metrics=True)
 
+			epoch_mape += mape.item()
+			epoch_rew += rew.item()
+			epoch_dual += loss.item()
 
-		average_loss = epoch_loss/len(train_loader)
-		average_loss_ = epoch_loss_dev/len(dev_loader)
-		print("train loss: {} -- dev loss: {} for epoch {}".format(average_loss,average_loss_,epoch))
+		average_mape = epoch_mape/len(loader)
+		average_rew = epoch_rew/len(loader)
+		average_dual = epoch_dual/len(loader)
+		print("{}: mape: {}, reward: {}, dual: for epoch {}".format(set_,average_mape,average_rew,epoch))
+
+	for epoch in range(epochs):
+		iteration("train",model,train_loader,criterion,epoch)
+		iteration("dev",model,dev_loader,criterion,epoch,train=False)
