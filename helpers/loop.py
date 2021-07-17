@@ -42,7 +42,7 @@ def loop(model,train_loader,dev_loader,epochs,optimizer,criterion):
 		average_mape = epoch_mape/len(loader)
 		average_rew = epoch_rew/len(loader)
 		average_dual = epoch_dual/len(loader)
-		print("{}: mape: {}, reward: {}, dual: for epoch {}".format(set_,average_mape,average_rew,epoch))
+		print("{}: mape: {}, reward: {}, dual: {} for epoch {}".format(set_,average_mape,average_rew,average_dual,epoch))
 
 	for epoch in range(epochs):
 		iteration("train",model,train_loader,criterion,epoch)
