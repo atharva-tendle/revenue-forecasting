@@ -18,7 +18,7 @@ def weighted_loss(y_true, y_pred, alpha=0.5, beta=0.5):
 
     def mean_absolute_percentage_error(true, pred):
         """ Computes MAPE """
-        return np.mean(np.abs((true - pred) / true)) * 100
+        return torch.mean(torch.abs((true - pred) / true)) * 100
 
     def threshold_score(mape):
         """ Computes reward for one mape value """
@@ -38,16 +38,17 @@ def weighted_loss(y_true, y_pred, alpha=0.5, beta=0.5):
     mape_list = []
     reward_list = []
 
-    for true, pred in zip(np.array(y_test), preds):
-        mape_list.append(mean_absolute_percentage_error(true, pred))
+    for true, pred in zip(batch_y, y_pred):
+        mape_list.append(mean_absolute_percentage_error(true.squeeze(), pred))
         reward_list.append(threshold_score(mean_absolute_percentage_error(true, pred)))
     
     scaler = MinMaxScaler()
 
     #  normalize reward from -2,2 to 0,1
-    normalized_reward_list  = scaler.fit_transform(reward_list)
+    # convert to np for scaling then to tensor for backprop
+    normalized_reward_list  = torch.Tensor(scaler.fit_transform(np.array(reward_list).reshape(-1, 1)))
     # compute reward score
-    reward_score = np.mean(normalized_reward_list) * 100
+    reward_score = torch.mean(normalized_reward_list) * 100
 
     return (alpha *  mape_loss) + (beta * reward_score)
     
