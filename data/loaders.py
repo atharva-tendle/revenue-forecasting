@@ -21,7 +21,6 @@ def create_loaders(data):
   # create a dictionary of dataloaders, where each key corresponds to a cluster.
   cluster_index = np.arange(len(data))
   cluster_dataloaders = {key: None for key in cluster_index}
-  print(cluster_dataloaders)
   
   # class for creating a custom dataset that loads the input and label.
   class dataset(Dataset):
@@ -45,6 +44,5 @@ def create_loaders(data):
 
   for i in range(len(data)):
     cluster_dataloaders[i] = (DataLoader(create_dataset(i,0)),DataLoader(create_dataset(i,1)),DataLoader(create_dataset(i,2)))
-    print(len)
 
   return cluster_dataloaders
