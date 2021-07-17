@@ -57,15 +57,15 @@ def data_process_(df,assignments,p,f):
     test_inp_data = []
     test_lab_data = []
     for id in assignments[clust]:
-      pract_train = df[df.id == id].to_numpy()[:-16]
+      pract_train = df[df.id == id].to_numpy()[:-24]
       train_inp, train_lab = seq_create(normalize(pract_train),p,f)
       training_inp_data.append(train_inp)
       training_lab_data.append(train_lab)
-      pract_dev = df[df.id == id].to_numpy()[-16:-8]
+      pract_dev = df[df.id == id].to_numpy()[-24:-12]
       dev_inp, dev_lab = seq_create(normalize(pract_dev),p,f)
       dev_inp_data.append(dev_inp)
       dev_lab_data.append(dev_lab)
-      pract_test = df[df.id == id].to_numpy()[-8:]
+      pract_test = df[df.id == id].to_numpy()[-12:]
       test_inp, test_lab = seq_create(normalize(pract_test),p,f)
       test_inp_data.append(test_inp)
       test_lab_data.append(test_lab)
