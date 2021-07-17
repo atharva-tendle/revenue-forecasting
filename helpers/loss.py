@@ -2,7 +2,7 @@ import torch
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
 
-def weighted_loss(y_true, y_pred, alpha=0.5, beta=0.5):
+def weighted_loss(y_true, y_pred, alpha=0.5, beta=0.5, return_metrics=False):
     """
     Custom Loss function that combines MAPE and Reward.
     alpha and beta params can be used to tune.
@@ -12,6 +12,7 @@ def weighted_loss(y_true, y_pred, alpha=0.5, beta=0.5):
         - y_pred (numpy array) : numpy array of predicted revenues
         - alpha (float): tuning parameter for MAPE 
         - beta (float) : tuning parameter for Rewards
+        - return_metrics (bool) : flag to return metrics for current predictions
     returns:
         - loss (float) : final combined loss
     """
@@ -38,7 +39,7 @@ def weighted_loss(y_true, y_pred, alpha=0.5, beta=0.5):
     mape_list = []
     reward_list = []
 
-    for true, pred in zip(batch_y, y_pred):
+    for true, pred in zip(y_true, y_pred):
         mape_list.append(mean_absolute_percentage_error(true.squeeze(), pred))
         reward_list.append(threshold_score(mean_absolute_percentage_error(true, pred)))
     
@@ -50,5 +51,11 @@ def weighted_loss(y_true, y_pred, alpha=0.5, beta=0.5):
     # compute reward score
     reward_score = torch.mean(normalized_reward_list) * 100
 
-    return (alpha *  mape_loss) + (beta * reward_score)
-    
+    # loss
+    loss = (alpha *  mape_loss) + (beta * reward_score)
+
+    if return_metrics:
+        unnormalized_reward_score = torch.mean(torch.Tensor(reward_list * 100))
+        return loss, mape_loss, unnormalized_reward_score
+    else:
+        return loss
