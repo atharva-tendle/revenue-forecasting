@@ -1,3 +1,9 @@
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import Normalizer
+from tslearn.clustering import TimeSeriesKMeans
+
+
 def clustering_(df,num_clust,period):
   """
   A function that uses dtw k-means to cluster practices based on production.
