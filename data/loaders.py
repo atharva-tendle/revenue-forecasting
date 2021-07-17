@@ -5,13 +5,16 @@ import torch.nn as nn
 import pandas as pd
 import numpy as np
 
-def create_loaders(data):
+def create_loaders(data,batch_train=14,batch_dev=8,batch_test=8):
   """
   A function for creating train, dev and test dataloaders for each cluster.
   params:
     - data (dict): a dictionary, where the key corresponds to the cluster, and the value is 
       a tuple of tuples, where there are three entries in the outer tuple corresponding to train/dev/test,
       and two entries in the inner tuples, corresponding to input and label data.
+     - batch_train (int): training set batch size. (preferbly <= 14)
+     - batch_dev (int): dev set batch size. (must be <= 8)
+     - batch_test (int): test set batch size. (must be <= 8)
   returns:
     - cluster_dataloaders_ (dict): a dictionary where the key corresponds to the cluster and the value is a tuple of size of three,
       each corresponding to the train, dev and test dataloader for that cluster.
@@ -43,6 +46,6 @@ def create_loaders(data):
     return data_
 
   for i in range(len(data)):
-    cluster_dataloaders[i] = (DataLoader(create_dataset(i,0)),DataLoader(create_dataset(i,1)),DataLoader(create_dataset(i,2)))
+    cluster_dataloaders[i] = (DataLoader(create_dataset(i,0),batch_train),DataLoader(create_dataset(i,1),batch_dev),DataLoader(create_dataset(i,2),batch_test))
 
   return cluster_dataloaders
