@@ -1,3 +1,6 @@
+import torch
+
+
 def loop(model,train_loader,dev_loader,epochs,optimizer,criterion):
 	for epoch in range(epochs):
 		epoch_loss = 0
