@@ -5,7 +5,7 @@ import torch.nn as nn
 import pandas as pd
 import numpy as np
 
-def create_loaders(data,batch_train=14,batch_dev=4):
+def create_loaders(data,batch_train=4,batch_dev=4):
   """
   A function for creating train, dev and test dataloaders for each cluster.
   params:
