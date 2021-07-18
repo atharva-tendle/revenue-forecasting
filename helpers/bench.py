@@ -1,3 +1,6 @@
+import numpy as np
+import torch
+
 def benchmark(net,num_clust,dataloaders_,criterion,epochs,optimizer):
 	"""
 	A function that allows you to train a model for each cluster, print results and
