@@ -46,7 +46,7 @@ class CNNLSTMModel(nn.Module):
         self.seq_length = seq_length
 
         #CNN  We can stack as many as we like
-        self.cnn = nn.Conv1d(self.input_size, self.cnn_size, kernel_size=3)
+        self.cnn = nn.Conv1d(self.input_size, self.cnn_size, kernel_size=4)
 
         # LSTM 
         self.lstm = nn.LSTM(1, self.h_size, self.n_layers, batch_first=True)
