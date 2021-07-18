@@ -2,9 +2,9 @@ import torch
 import torch.nn as nn
 
 
-class VanillaRNN(nn.Module):
+class GRUModel(nn.Module):
     def __init__(self, input_size, output_size, hidden_size, n_layers):
-        super(VanillaRNN, self).__init__()
+        super(GRUModel, self).__init__()
 
         self.input_size = input_size
         self.output_size = output_size # should be 1 since we are predicting production?
@@ -13,7 +13,7 @@ class VanillaRNN(nn.Module):
         
 
         # RNN
-        self.rnn = nn.RNN(self.input_size, self.h_size, self.n_layers, batch_first=True)
+        self.rnn = nn.GRU(self.input_size, self.h_size, self.n_layers, batch_first=True)
 
         # Fully connected layer
         self.fc = nn.Linear(self.h_size, self.output_size)
@@ -25,9 +25,10 @@ class VanillaRNN(nn.Module):
         # get outputs
         out, h_0 = self.rnn(x, h_0)
 
-        # reshape outputs?
-        
-        # pass through fc
+        # reshape.
+        b = out.size(0)
+        out = out.reshape(b,-1)
+        # Convert the final state to our desired output shape (batch_size, output_dim)
         out = self.fc(out)
 
         return out
