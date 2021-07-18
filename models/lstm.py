@@ -49,20 +49,16 @@ class CNNLSTMModel(nn.Module):
         self.cnn = nn.Conv1d(self.input_size, self.cnn_size, kernel_size=3)
 
         # LSTM 
-        self.lstm = nn.LSTM(self.cnn_size, self.h_size, self.n_layers, batch_first=True)
+        self.lstm = nn.LSTM(1, self.h_size, self.n_layers, batch_first=True)
 
         # Fully connected layer
-        self.fc = nn.Linear(self.h_size*self.seq_length, self.output_size)
+        self.fc = nn.Linear(self.cnn_size*self.seq_length, self.output_size)
 
     def forward(self, x):
         # cnn
         x = F.relu(self.cnn(x))
-        # init hidden state
-        h_0 = torch.zeros(self.n_layers, x.size(0), self.h_size)
-        # init cell state
-        c_0 = torch.zeros(self.n_layers, x.size(0), self.h_size)
 
-        out, _ = self.lstm(x, (h_0, c_0))
+        out, _ = self.lstm(x)
 
         # reshape.
         b = out.size(0)
