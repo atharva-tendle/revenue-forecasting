@@ -54,30 +54,22 @@ def data_process_(df,assignments,p,f):
     training_lab_data = []
     dev_inp_data = []
     dev_lab_data = []
-    test_inp_data = []
-    test_lab_data = []
     for id in assignments[clust]:
       pract_train = df[df.id == id].to_numpy()[:-20]
       train_inp, train_lab = seq_create(normalize(pract_train),p,f)
       training_inp_data.append(train_inp)
       training_lab_data.append(train_lab)
-      pract_dev = df[df.id == id].to_numpy()[-20:-10]
+      pract_dev = df[df.id == id].to_numpy()[-20:]
       dev_inp, dev_lab = seq_create(normalize(pract_dev),p,f)
       dev_inp_data.append(dev_inp)
       dev_lab_data.append(dev_lab)
-      pract_test = df[df.id == id].to_numpy()[-10:]
-      test_inp, test_lab = seq_create(normalize(pract_test),p,f)
-      test_inp_data.append(test_inp)
-      test_lab_data.append(test_lab)
 
     # concatenate the sub-datasets i.e. practices in the train/dev/test sets, respectively.
     training_inp_data = np.concatenate(training_inp_data,axis=0)
     training_lab_data = np.concatenate(training_lab_data,axis=0)
     dev_inp_data = np.concatenate(dev_inp_data,axis=0)
     dev_lab_data = np.concatenate(dev_lab_data,axis=0)
-    test_inp_data = np.concatenate(test_inp_data,axis=0)
-    test_lab_data = np.concatenate(test_lab_data,axis=0)
 
-    cluster_datasets[clust] = ((training_inp_data,training_lab_data), (dev_inp_data,dev_lab_data), (test_inp_data,test_lab_data))
+    cluster_datasets[clust] = ((training_inp_data,training_lab_data), (dev_inp_data,dev_lab_data))
 
   return cluster_datasets
