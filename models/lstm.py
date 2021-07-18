@@ -27,7 +27,7 @@ class LSTMModel(nn.Module):
 
 		# reshape.
 		b = out.size(0)
-		out = out.view(b,-1)
+		out = out.reshape(b,-1)
 		# Convert the final state to our desired output shape (batch_size, output_dim)
 		out = self.fc(out)
 		return out
