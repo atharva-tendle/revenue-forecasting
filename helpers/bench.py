@@ -29,7 +29,7 @@ def benchmark(net,num_clust,dataloaders_,criterion,epochs,optimizer):
 					inp,label = data
 					out = model(inp.float()).squeeze(-1)
 					loss, mape, rew = criterion(label.float(),out.float(),return_metrics=True)
-					loss.backward()
+					mape.backward()
 					optimizer.step()
 
 				else:
