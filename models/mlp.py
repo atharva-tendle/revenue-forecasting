@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 class MLP(nn.Module):
-  def __init__(self,inp_dim):
+  def __init__(self,inp_dim,output_dim):
     super().__init__()
 
     self.mlp = nn.Sequential(
@@ -12,9 +12,7 @@ class MLP(nn.Module):
         nn.ReLU(),
         nn.Linear(16,8),
         nn.ReLU(),
-        nn.Linear(8,4),
-        nn.ReLU(),
-        nn.Linear(4,1)
+        nn.Linear(8,output_dim)
     )
 
   def forward(self,x):
