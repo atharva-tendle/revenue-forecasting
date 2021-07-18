@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 # main data processing function.
-def data_process_(df,assignments,p,f):
+def data_process_(df,assignments,p,f,covid=True):
   """
   A function that produces a list of pytorch dataloaders, one for each cluster.
   params:
@@ -59,7 +59,10 @@ def data_process_(df,assignments,p,f):
       train_inp, train_lab = seq_create(normalize(pract_train),p,f)
       training_inp_data.append(train_inp)
       training_lab_data.append(train_lab)
-      pract_dev = df[df.id == id].to_numpy()[-20:]
+      if covid:
+        pract_dev = df[df.id == id].to_numpy()[-20:]
+      else:
+        pract_dev = df[df.id == id].to_numpy()[-20:-12]
       dev_inp, dev_lab = seq_create(normalize(pract_dev),p,f)
       dev_inp_data.append(dev_inp)
       dev_lab_data.append(dev_lab)
