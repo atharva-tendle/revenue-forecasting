@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 
-def benchmark(net,num_clust,dataloaders_,criterion,epochs,optimizer):
+def benchmark(net,num_clust,dataloaders_,epochs,cluster_nets):
 	"""
 	A function that allows you to train a model for each cluster, print results and
 	store the best performing epoch's mape result. It decides the best epoch using the mape score.
@@ -10,8 +10,8 @@ def benchmark(net,num_clust,dataloaders_,criterion,epochs,optimizer):
 		- num_clust (int): number of clusters.
 		- dataloaders_ (dict): a dictionary of train, dev and test dataloaders for each cluster. The output of data_process.
 		- criterion: loss function.
-		- epochs: ...
-		- optimizer: ...
+		- epochs: epochs for training
+		- cluster_nets: dictionary of networks for each cluster
 	returns:
 		- model_results: a dictionary, where each key corresponds to the cluster index, and the value is a list of size 2, where the first
 			index is the best performing mape score, and the second is the epoch for which it occured. This is for the dev set btw.
@@ -20,32 +20,28 @@ def benchmark(net,num_clust,dataloaders_,criterion,epochs,optimizer):
 
 		def iteration(set_,model,loader,criterion,epoch,train=True):
 			epoch_mape = 0.0
-			epoch_rew = 0.0
-			epoch_dual = 0.0
 
 			for idx, data in enumerate(loader):
 				if train:
 					optimizer.zero_grad()
 					inp,label = data
 					out = model(inp.float()).squeeze(-1)
-					loss, mape, rew = criterion(label.float(),out.float(),return_metrics=True)
-					mape.backward()
+					loss = criterion(label.float(),out.float())
+                    loss.backward()
 					optimizer.step()
 
 				else:
 					with torch.no_grad():
 						inp,label = data
 						out = model(inp.float()).squeeze(-1)
-						loss, mape, rew = criterion(label.float(),out.float(),return_metrics=True)
+						loss = criterion(label.float(),out.float())
 
 				epoch_mape += mape.item()
-				epoch_rew += rew.item()
-				epoch_dual += loss.item()
+
 
 			average_mape = epoch_mape/len(loader)
-			average_rew = epoch_rew/len(loader)
-			average_dual = epoch_dual/len(loader)
-			print("{}: mape: {}, reward: {}, dual: {} for epoch {}".format(set_,average_mape,average_rew,average_dual,epoch))
+
+			print("{}: mape: {} for epoch {}".format(set_,average_mape,epoch))
 			if not train:
 					return average_mape
 
@@ -63,6 +59,7 @@ def benchmark(net,num_clust,dataloaders_,criterion,epochs,optimizer):
 	model_results = {key: None for key in cluster_index}
 
 	for clust in range(num_clust):
+		net, optimizer, criterion = cluster_nets[cluster]
 		train_dataloader = dataloaders_[clust][0]
 		dev_dataloader = dataloaders_[clust][1]
 		best_mape = loop(net,train_dataloader,dev_dataloader,epochs,optimizer,criterion)
