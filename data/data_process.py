@@ -55,12 +55,12 @@ def data_process_(df,assignments,p,f,covid=True):
     dev_inp_data = []
     dev_lab_data = []
     for id in assignments[clust]:
-      pract_train = df[df.id == id].to_numpy()[:-22]
+      pract_train = df[df.id == id].to_numpy()[:-18]
       train_inp, train_lab = seq_create(normalize(pract_train),p,f)
       training_inp_data.append(train_inp)
       training_lab_data.append(train_lab)
       if covid:
-        pract_dev = df[df.id == id].to_numpy()[-22:]
+        pract_dev = df[df.id == id].to_numpy()[-18:]
       else:
         pract_dev = df[df.id == id].to_numpy()[-22:-12]
       dev_inp, dev_lab = seq_create(normalize(pract_dev),p,f)
